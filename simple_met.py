@@ -48,7 +48,7 @@ class Frame(wx.Frame):
     def on_timer(self):
         if not self.go:
             return
-        if self.counter == self.top + 1:
+        if self.counter >= self.top + 1:
             self.counter = 1
         self.text.SetLabel(str(self.counter))
         self.change_color()
@@ -88,7 +88,6 @@ class Frame(wx.Frame):
         self.speed = (240000 / val) / self.bottom
 
     def OnWidgetEnterTop(self, e):
-
         obj = e.GetEventObject()
         val = obj.GetValue()
 
