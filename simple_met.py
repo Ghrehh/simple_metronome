@@ -1,4 +1,3 @@
-import random
 import wx
 
 class Frame(wx.Frame):
@@ -8,10 +7,13 @@ class Frame(wx.Frame):
         panel = wx.Panel(self)
         style = wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE
 
-        self.can_call = True
+        self.current_bpm = 120
 
         self.speed = 500
         self.go = False
+
+        self.top = 4
+        self.bottom = 4
 
         self.text = wx.StaticText(panel, style=style, label="1")
         self.text.SetForegroundColour((178, 0, 0))
@@ -30,6 +32,12 @@ class Frame(wx.Frame):
         self.sld.Bind(wx.EVT_SCROLL, self.OnSliderScroll)
         self.txt = wx.StaticText(panel, label='120 BPM', pos=(292, 168))
 
+        self.comboTop = wx.ComboBox(panel, pos=(0, 0), value="4", style=wx.CB_READONLY, choices=['2','3','4','5','6','7','8','9','10','11','12','13','14','15','16'])
+        self.comboTop.Bind(wx.EVT_COMBOBOX, self.OnWidgetEnterTop)
+
+        self.comboBottom = wx.ComboBox(panel, pos=(0, 25), value="4", style=wx.CB_READONLY, choices=['4', '8', '16'])
+        self.comboBottom.Bind(wx.EVT_COMBOBOX, self.OnWidgetEnterBottom)
+
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.AddStretchSpacer(1)
         sizer.Add(self.text, 0, wx.EXPAND)
@@ -40,7 +48,7 @@ class Frame(wx.Frame):
     def on_timer(self):
         if not self.go:
             return
-        if self.counter == 5:
+        if self.counter == self.top + 1:
             self.counter = 1
         self.text.SetLabel(str(self.counter))
         self.change_color()
@@ -57,11 +65,10 @@ class Frame(wx.Frame):
 
 
     def change_color(self):
-            if self.counter == 4:
+            if self.counter == self.top:
                 self.text.SetForegroundColour((178, 0, 0))
             else:
                 self.text.SetForegroundColour((0, 102, 255))
-
 
     def gogo(self, e):
         if self.go == False:
@@ -72,13 +79,30 @@ class Frame(wx.Frame):
             self.go = False
             self.cbtn.Label = "Go"
 
-
     def OnSliderScroll(self, e):
         obj = e.GetEventObject()
         val = obj.GetValue()
 
+        self.current_bpm = val
         self.txt.SetLabel(str(val) + " BPM")
-        self.speed = 60000 / val
+        self.speed = (240000 / val) / self.bottom
+
+    def OnWidgetEnterTop(self, e):
+
+        obj = e.GetEventObject()
+        val = obj.GetValue()
+
+        self.comboTop.SetLabel(val)
+        self.top = int(val)
+
+    def OnWidgetEnterBottom(self, e):
+        obj = e.GetEventObject()
+        val = obj.GetValue()
+
+        self.comboBottom.SetLabel(val)
+        self.bottom = int(val)
+
+        self.speed = (240000 / self.current_bpm ) / self.bottom
 
 
 
